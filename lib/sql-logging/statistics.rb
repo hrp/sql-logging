@@ -39,7 +39,7 @@ module SqlLogging
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{sql-logging/lib} }
   
     def self.record_query(sql, name, msec, result)
-      unless name.blank? || name == :skip_logging
+      unless name == :skip_logging
         bytes = 0
         if result.nil?
           ntuples = 0
