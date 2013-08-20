@@ -40,11 +40,8 @@ module SqlLogging
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{sql-logging/lib} }
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{set_current_controller} }
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{set_mailer_url_options} }
-    @@backtrace_cleaner.add_silencer { |line| line =~ %r{errplane} }
-    @@backtrace_cleaner.add_silencer { |line| line =~ %r{network_sub_rack_filter} }
-    @@backtrace_cleaner.add_silencer { |line| line =~ %r{map_number_rack_filter} }
-    @@backtrace_cleaner.add_silencer { |line| line =~ %r{mongo_connection_verifier} }
-    @@backtrace_cleaner.add_silencer { |line| line =~ %r{strip_string_params} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{call} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{config/initializers/strip_string_params.rb:42:in `process'} }
 
     def self.record_query(sql, name, msec, result)
       unless name == :skip_logging
