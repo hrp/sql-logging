@@ -79,8 +79,8 @@ module SqlLogging
           query.log_query(ntuples || 0, bytes || 0, msec)
         end
 
-        Rails.logger.debug "    #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
-        Rails.logger.debug "BACKTRACE\n    #{backtrace}" if @@show_sql_backtrace
+        Rails.logger.debug "  returned  #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
+        Rails.logger.debug "  BACKTRACE =>\n    #{backtrace}\n--------------------------------------------" if @@show_sql_backtrace
       end
     end
   
