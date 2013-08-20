@@ -12,6 +12,7 @@ module SqlLogging
     @@show_sql_backtrace = true
     @@show_top_sql_queries = :total_time
     @@top_sql_queries = 10
+    @@top_sql_query_threshold = 30 # in ms
   
     cattr_accessor :show_sql_backtrace, :top_sql_queries
   
@@ -20,8 +21,8 @@ module SqlLogging
     end
   
     def self.show_top_sql_queries=(value)
-      unless [ false, :rows, :queries, :bytes, :total_time, :median_time ].include?(value)
-        raise ArgumentError, "show_top_sql_queries must be one of false, :rows, :queries, :bytes, :total_time or :median_time"
+      unless [ false, :rows, :queries, :bytes, :total_time, :median_time, :threshold ].include?(value)
+        raise ArgumentError, "show_top_sql_queries must be one of false, :rows, :queries, :bytes, :total_time, :threshold or :median_time"
       end
     
       @@show_top_sql_queries = value
@@ -37,7 +38,14 @@ module SqlLogging
   
     @@backtrace_cleaner = Rails.backtrace_cleaner.dup
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{sql-logging/lib} }
-  
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{set_current_controller} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{set_mailer_url_options} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{errplane} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{network_sub_rack_filter} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{map_number_rack_filter} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{mongo_connection_verifier} }
+    @@backtrace_cleaner.add_silencer { |line| line =~ %r{strip_string_params} }
+
     def self.record_query(sql, name, msec, result)
       unless name == :skip_logging
         bytes = 0
@@ -75,7 +83,7 @@ module SqlLogging
         end
 
         Rails.logger.debug "    #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
-        Rails.logger.debug "    #{backtrace}" if @@show_sql_backtrace
+        Rails.logger.debug "BACKTRACE\n    #{backtrace}" if @@show_sql_backtrace
       end
     end
   
@@ -83,7 +91,7 @@ module SqlLogging
       Rails.logger.debug "SQL Logging: #{helper.pluralize(@@queries, 'statement')} executed, returning #{helper.number_to_human_size(@@bytes)}"
     
       unless @@show_top_sql_queries == false || @@top_queries.empty?
-        Rails.logger.debug "Top #{@@top_sql_queries} SQL executions:"
+        Rails.logger.debug "Top #{@@top_sql_queries} meatiest SQL executions:"
         sorted_keys = @@top_queries.keys.sort_by { |k| @@top_queries[k][@@show_top_sql_queries] }.reverse
         sorted_keys.slice(0..@@top_sql_queries).each do |key|
           query = @@top_queries[key]
