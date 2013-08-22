@@ -1,2 +1,5 @@
 *.gem
 test-server
+.idea
+.project
+.DS_Store

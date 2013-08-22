@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'rake'
 
 lib = File.expand_path('../lib', __FILE__)
 $:.unshift lib unless $:.include?(lib)
@@ -19,4 +18,5 @@ Gem::Specification.new do |s|
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.rdoc']
   s.add_dependency('rails', '> 3.0.0')
+  s.add_dependency('rake', '> 0.9.0')
 end
