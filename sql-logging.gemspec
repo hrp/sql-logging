@@ -13,10 +13,10 @@ Gem::Specification.new do |s|
   s.platform = Gem::Platform::RUBY
   s.summary = 'Adds SQL analysis and debugging info to Rails 3 apps.'
   s.description = 'Adds SQL analysis and debugging info to Rails 3 apps.'
-  s.files = FileList['lib/**/*'].to_a
-  s.require_path = 'lib'
+  s.files = `git ls-files`.split("\n")
+  s.require_paths = ['lib']
   s.has_rdoc = true
   s.extra_rdoc_files = ['README.rdoc']
-  s.add_dependency('rails', '> 3.0.0')
-  s.add_dependency('rake', '> 0.9.0')
+  s.add_dependency 'rails', '> 3.0.0'
+  s.add_dependency 'rake', '~> 0.9.2'
 end
