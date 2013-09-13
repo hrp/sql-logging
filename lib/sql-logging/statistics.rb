@@ -44,7 +44,7 @@ module SqlLogging
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{config/initializers/strip_string_params.rb:42:in `process'} }
 
     def self.record_query(sql, name, msec, result)
-      unless name == :skip_logging
+     # unless name == :skip_logging
         bytes = 0
         if result.nil?
           ntuples = 0
@@ -81,7 +81,7 @@ module SqlLogging
 
         Rails.logger.debug "  returned  #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
         Rails.logger.debug "  BACKTRACE =>\n    #{backtrace}\n--------------------------------------------" if @@show_sql_backtrace
-      end
+     # end
     end
   
     def self.log_report
