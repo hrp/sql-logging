@@ -44,7 +44,7 @@ module SqlLogging
     @@backtrace_cleaner.add_silencer { |line| line =~ %r{config/initializers/strip_string_params.rb:42:in `process'} }
 
     def self.record_query(sql, name, msec, result)
-     # unless name == :skip_logging
+      unless name == :skip_logging
         bytes = 0
         if result.nil?
           ntuples = 0
@@ -79,20 +79,20 @@ module SqlLogging
           query.log_query(ntuples || 0, bytes || 0, msec)
         end
 
-        Rails.logger.debug "  returned  #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
-        Rails.logger.debug "  BACKTRACE =>\n    #{backtrace}\n--------------------------------------------" if @@show_sql_backtrace
-     # end
+        Rails.logger.info "  returned  #{helper.pluralize(ntuples, 'row')}, #{helper.number_to_human_size(bytes)}"
+        Rails.logger.info "  BACKTRACE =>\n    #{backtrace}\n--------------------------------------------" if @@show_sql_backtrace
+      end
     end
   
     def self.log_report
-      Rails.logger.debug "SQL Logging: #{helper.pluralize(@@queries, 'statement')} executed, returning #{helper.number_to_human_size(@@bytes)}"
+      Rails.logger.info "SQL Logging: #{helper.pluralize(@@queries, 'statement')} executed, returning #{helper.number_to_human_size(@@bytes)}"
     
       unless @@show_top_sql_queries == false || @@top_queries.empty?
-        Rails.logger.debug "Top #{@@top_sql_queries} meatiest SQL executions:"
+        Rails.logger.info "Top #{@@top_sql_queries} meatiest SQL executions:"
         sorted_keys = @@top_queries.keys.sort_by { |k| @@top_queries[k][@@show_top_sql_queries] }.reverse
         sorted_keys.slice(0..@@top_sql_queries).each do |key|
           query = @@top_queries[key]
-          Rails.logger.debug "  Executed #{helper.pluralize(query.queries, 'time')} in #{'%.1f' % query.total_time}ms " +
+          Rails.logger.info "  Executed #{helper.pluralize(query.queries, 'time')} in #{'%.1f' % query.total_time}ms " +
             "(#{'%.1f' % query.min_time}/#{'%.1f' % query.median_time}/#{'%.1f' % query.max_time}ms min/median/max), " +
             "returning #{helper.pluralize(query.rows, 'row')} " +
             "(#{helper.number_to_human_size(query.bytes)}):\n" +
